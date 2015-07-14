@@ -10,7 +10,16 @@
 
 using namespace metal;
 
+
+#define ESCAPERADIUS 2
+#define ER2 ESCAPERADIUS * ESCAPERADIUS
+
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+
+
+half4 lerpf(half4 a, half4 b, float t);
+half4 HeatMapColor(float value, float minValue, float maxValue);
+
 
 half4 lerpf(half4 a, half4 b, float t)
 {
