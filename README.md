@@ -1,4 +1,4 @@
-# mandelbrot_iosmetal
+# Mandelbrot using Swift and Metal on iOS
 
 
 Sample implementation of the Mandelbrot fractal to familiarize myself with Metal andd Swift on iOS.
