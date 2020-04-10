@@ -28,7 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1FD8918F1B3B2965001583FD /* mandelbrot_metal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mandelbrot_metal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1FD8918F1B3B2965001583FD /* Mandelbrot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mandelbrot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FD891931B3B2965001583FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1FD891941B3B2965001583FD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1FD891961B3B2965001583FD /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
@@ -72,7 +72,7 @@
 		1FD891901B3B2965001583FD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1FD8918F1B3B2965001583FD /* mandelbrot_metal.app */,
+				1FD8918F1B3B2965001583FD /* Mandelbrot.app */,
 				1FD891A61B3B2966001583FD /* mandelbrot_metalTests.xctest */,
 			);
 			name = Products;
@@ -135,7 +135,7 @@
 			);
 			name = mandelbrot_metal;
 			productName = mandelbrot_metal;
-			productReference = 1FD8918F1B3B2965001583FD /* mandelbrot_metal.app */;
+			productReference = 1FD8918F1B3B2965001583FD /* Mandelbrot.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1FD891A51B3B2966001583FD /* mandelbrot_metalTests */ = {
@@ -380,7 +380,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "biographics.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Mandelbrot;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -394,7 +394,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "biographics.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Mandelbrot;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
