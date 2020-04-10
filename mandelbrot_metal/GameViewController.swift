@@ -104,14 +104,14 @@ class GameViewController: UIViewController {
         self.resize()
     }
     
-    @IBAction func handlePinch(recognizer : UIPinchGestureRecognizer) {
-        mandel.setZoom(z: Float(recognizer.scale))
+    @IBAction func handlePinch(recognizer: UIPinchGestureRecognizer) {
+        mandel.setZoom(z: recognizer.scale)
         recognizer.scale = 1
     }
     
     @IBAction func didPan(sender: UIPanGestureRecognizer) {
         let currentPoint = sender.translation(in: self.view)
-        mandel.setOrigin(dx: Float(currentPoint.x - lastPoint.x), dy: Float(currentPoint.y - lastPoint.y))
+        mandel.moveOrigin(dx: currentPoint.x - lastPoint.x, dy: currentPoint.y - lastPoint.y)
         lastPoint = currentPoint
         
         if (sender.state == .ended) {
@@ -178,7 +178,7 @@ class GameViewController: UIViewController {
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         renderEncoder.setVertexBuffer(vertexTextureBuffer, offset: 0, index: 1)
         
-        var fragData:[Float] = [ mandel.zoom, mandel.getDelta().x, mandel.getDelta().y, mandel.getOrigin().x, mandel.getOrigin().y ]
+        var fragData: [Float] = [ mandel.zoom, mandel.getDelta().x, mandel.getDelta().y, mandel.getOrigin().x, mandel.getOrigin().y ].map { Float($0) }
         memcpy(fragmentBuffer.contents(), &fragData, MemoryLayout<Float>.size * 5)
         renderEncoder.setFragmentBuffer(fragmentBuffer, offset: 0, index: 0)
         
