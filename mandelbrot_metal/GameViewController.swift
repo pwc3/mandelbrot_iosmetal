@@ -98,10 +98,22 @@ class GameViewController: UIViewController {
         
         timer = CADisplayLink(target: self, selector: #selector(renderLoop))
         timer.add(to: .main, forMode: .default)
+
+        self.becomeFirstResponder()
+    }
+
+    override var canBecomeFirstResponder: Bool {
+        return true
     }
     
     override func viewDidLayoutSubviews() {
         self.resize()
+    }
+
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            mandel.reset()
+        }
     }
     
     @IBAction func handlePinch(recognizer: UIPinchGestureRecognizer) {

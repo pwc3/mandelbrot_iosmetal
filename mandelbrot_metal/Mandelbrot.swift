@@ -13,6 +13,10 @@ class Mandelbrot {
     let resolution: CGSize
     let translationScale: CGSize
 
+    let initialOrigin: CGPoint
+    let initialZoom: CGFloat
+    let initialDelta: CGPoint
+
     var origin: CGPoint
     var zoom: CGFloat
     var delta: CGPoint
@@ -21,13 +25,25 @@ class Mandelbrot {
         let screenSize = UIScreen.main.bounds.size
         let scale = UIScreen.main.nativeScale
         resolution = CGSize(width: screenSize.width * scale, height: screenSize.height * scale)
-        translationScale = CGSize(width: screenSize.width / 2, height: screenSize.height / 2)
 
-        origin = CGPoint(x: -0.5, y: 0)
+        let translationScaleFactor: CGFloat = 4
+        translationScale = CGSize(width: screenSize.width / translationScaleFactor, height: screenSize.height / translationScaleFactor)
+
+        initialOrigin = CGPoint(x: -0.5, y: 0)
+        origin = initialOrigin
 
         let h: CGFloat = 2.5
-        delta = CGPoint(x: h * resolution.width / resolution.height, y: h)
-        zoom = 1
+        initialDelta = CGPoint(x: h * resolution.width / resolution.height, y: h)
+        delta = initialDelta
+
+        initialZoom = 1
+        zoom = initialZoom
+    }
+
+    func reset() {
+        origin = initialOrigin
+        zoom = initialZoom
+        delta = initialDelta
     }
 
     func moveOrigin(dx: CGFloat, dy: CGFloat) {
