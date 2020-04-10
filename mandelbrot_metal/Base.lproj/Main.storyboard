@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14C1514" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BV1-FR-VrT">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Game View Controller-->
@@ -13,9 +15,9 @@
                         <viewControllerLayoutGuide type="bottom" id="qHh-Mt-9TT"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="3se-qz-xqx">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="1sg-BU-Kge" appends="YES" id="WNX-IL-qJ2"/>
                             <outletCollection property="gestureRecognizers" destination="MOr-7K-5WJ" appends="YES" id="Tpo-pY-Xke"/>
@@ -25,17 +27,18 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
                 <panGestureRecognizer minimumNumberOfTouches="1" id="1sg-BU-Kge">
                     <connections>
-                        <action selector="didPan:" destination="BV1-FR-VrT" id="Z6i-QP-P7P"/>
+                        <action selector="didPanWithSender:" destination="BV1-FR-VrT" id="N1u-bF-c7H"/>
                         <outlet property="delegate" destination="3se-qz-xqx" id="agO-Nx-KfD"/>
                     </connections>
                 </panGestureRecognizer>
                 <pinchGestureRecognizer id="MOr-7K-5WJ">
                     <connections>
-                        <action selector="handlePinch:" destination="BV1-FR-VrT" id="ONy-Bk-aNz"/>
+                        <action selector="handlePinchWithRecognizer:" destination="BV1-FR-VrT" id="bfv-im-CZg"/>
                         <outlet property="delegate" destination="BV1-FR-VrT" id="W1D-WZ-4vW"/>
                     </connections>
                 </pinchGestureRecognizer>
             </objects>
+            <point key="canvasLocation" x="26" y="29"/>
         </scene>
     </scenes>
 </document>

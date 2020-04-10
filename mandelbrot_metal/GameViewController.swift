@@ -40,7 +40,7 @@ let vertexTextureData:[Float] =
 
 class GameViewController: UIViewController {
     
-    let device = { MTLCreateSystemDefaultDevice() }()
+    let device: MTLDevice! = { MTLCreateSystemDefaultDevice() }()
     let metalLayer = { CAMetalLayer() }()
     
     var commandQueue: MTLCommandQueue! = nil
@@ -55,47 +55,49 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         
         metalLayer.device = device
-        metalLayer.pixelFormat = .BGRA8Unorm
+        metalLayer.pixelFormat = .bgra8Unorm
         metalLayer.framebufferOnly = true
         
         self.resize()
         
         view.layer.addSublayer(metalLayer)
-        view.opaque = true
+        view.isOpaque = true
         view.backgroundColor = nil
         
-        commandQueue = device.newCommandQueue()
+        commandQueue = device.makeCommandQueue()
         commandQueue.label = "main command queue"
         
-        let defaultLibrary = device.newDefaultLibrary()
-        let fragmentProgram = defaultLibrary?.newFunctionWithName("passThroughFragment")
-        let vertexProgram = defaultLibrary?.newFunctionWithName("passThroughVertex")
+        let defaultLibrary = device.makeDefaultLibrary()
+        let fragmentProgram = defaultLibrary?.makeFunction(name: "passThroughFragment")
+        let vertexProgram = defaultLibrary?.makeFunction(name: "passThroughVertex")
         
         let pipelineStateDescriptor = MTLRenderPipelineDescriptor()
         pipelineStateDescriptor.vertexFunction = vertexProgram
         pipelineStateDescriptor.fragmentFunction = fragmentProgram
-        pipelineStateDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        
-        var pipelineError : NSError?
-        pipelineState = device.newRenderPipelineStateWithDescriptor(pipelineStateDescriptor, error: &pipelineError)
-        if (pipelineState == nil) {
-            println("Failed to create pipeline state, error \(pipelineError)")
+        pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+
+        do {
+            pipelineState = try device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
         }
-        
-        vertexBuffer = device.newBufferWithLength(ConstantBufferSize, options: nil)
+        catch {
+            print("Failed to create pipeline state: \(error)")
+            return
+        }
+
+        vertexBuffer = device.makeBuffer(length: ConstantBufferSize, options: [])
         vertexBuffer.label = "vertices"
         
-        let vertexTextureSize = vertexData.count * sizeofValue(vertexTextureData[0])
-        vertexTextureBuffer = device.newBufferWithBytes(vertexTextureData, length: vertexTextureSize, options: nil)
+        let vertexTextureSize = vertexData.count * MemoryLayout.size(ofValue: vertexTextureData[0])
+        vertexTextureBuffer = device.makeBuffer(bytes: vertexTextureData, length: vertexTextureSize, options: [])
         vertexTextureBuffer.label = "textureCoord"
 
         // scale, origin.x, origin.y, delta.x, delta.y
-        let fragmentBufferSize = sizeof(Float) * 5
-        fragmentBuffer = device.newBufferWithLength(fragmentBufferSize, options: nil)
+        let fragmentBufferSize = MemoryLayout<Float>.size * 5
+        fragmentBuffer = device.makeBuffer(length: fragmentBufferSize, options: [])
         fragmentBuffer.label = "mandelbrotData"
         
-        timer = CADisplayLink(target: self, selector: Selector("renderLoop"))
-        timer.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        timer = CADisplayLink(target: self, selector: #selector(renderLoop))
+        timer.add(to: .main, forMode: .default)
     }
     
     override func viewDidLayoutSubviews() {
@@ -103,25 +105,20 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func handlePinch(recognizer : UIPinchGestureRecognizer) {
-
-        mandel.setZoom(Float(recognizer.scale))
+        mandel.setZoom(z: Float(recognizer.scale))
         recognizer.scale = 1
-        
     }
     
     @IBAction func didPan(sender: UIPanGestureRecognizer) {
-
-        let currentPoint = sender.translationInView(self.view)
-        mandel.setOrigin(Float(currentPoint.x - lastPoint.x), dy: Float(currentPoint.y - lastPoint.y))
+        let currentPoint = sender.translation(in: self.view)
+        mandel.setOrigin(dx: Float(currentPoint.x - lastPoint.x), dy: Float(currentPoint.y - lastPoint.y))
         lastPoint = currentPoint
         
-        if (sender.state == UIGestureRecognizerState.Ended) {
+        if (sender.state == .ended) {
             lastPoint = CGPoint(x: 0, y: 0)
         }
-
     }
-    
-    
+
     func resize() {
         if (view.window == nil) {
             return
@@ -138,67 +135,61 @@ class GameViewController: UIViewController {
         
         metalLayer.drawableSize = drawableSize
     }
-    
-    override func prefersStatusBarHidden() -> Bool {
+
+    override var prefersStatusBarHidden: Bool {
         return true
     }
    
     deinit {
         timer.invalidate()
     }
-    
-    func renderLoop() {
+
+    @objc func renderLoop() {
         autoreleasepool {
             self.render()
         }
     }
     
     func render() {
-        
         self.update()
-        
-        
+
         // vData is pointer to the MTLBuffer's Float data contents
         let pData = vertexBuffer.contents()
-        let vData = UnsafeMutablePointer<Float>(pData)
-        
+        let vData = pData.bindMemory(to: Float.self, capacity: vertexData.count)
+
         // reset the vertices to default before adding animated offsets
-        vData.initializeFrom(vertexData)
-        
-        
-        let commandBuffer = commandQueue.commandBuffer()
+        vData.initialize(from: vertexData, count: vertexData.count)
+
+        let commandBuffer: MTLCommandBuffer! = commandQueue.makeCommandBuffer()
         commandBuffer.label = "Frame command buffer"
         
-        let drawable = metalLayer.nextDrawable()
+        let drawable: CAMetalDrawable! = metalLayer.nextDrawable()
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = drawable.texture
-        renderPassDescriptor.colorAttachments[0].loadAction = .Clear
+        renderPassDescriptor.colorAttachments[0].loadAction = .clear
         renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.65, green: 0.65, blue: 0.65, alpha: 1.0)
-        renderPassDescriptor.colorAttachments[0].storeAction = .Store
+        renderPassDescriptor.colorAttachments[0].storeAction = .store
         
-        let renderEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)!
+        let renderEncoder: MTLRenderCommandEncoder! = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
         renderEncoder.label = "render encoder"
         
         renderEncoder.pushDebugGroup("draw triangles to cover screen")
         renderEncoder.setRenderPipelineState(pipelineState)
-        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
-        renderEncoder.setVertexBuffer(vertexTextureBuffer, offset: 0, atIndex: 1)
+        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        renderEncoder.setVertexBuffer(vertexTextureBuffer, offset: 0, index: 1)
         
         var fragData:[Float] = [ mandel.zoom, mandel.getDelta().x, mandel.getDelta().y, mandel.getOrigin().x, mandel.getOrigin().y ]
-        memcpy(fragmentBuffer.contents(), &fragData, sizeof(Float) * 5)
-        renderEncoder.setFragmentBuffer(fragmentBuffer, offset: 0, atIndex: 0)
+        memcpy(fragmentBuffer.contents(), &fragData, MemoryLayout<Float>.size * 5)
+        renderEncoder.setFragmentBuffer(fragmentBuffer, offset: 0, index: 0)
         
-        renderEncoder.drawPrimitives(.Triangle, vertexStart: 0, vertexCount: 6, instanceCount: 1)
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6, instanceCount: 1)
         
         renderEncoder.popDebugGroup()
         renderEncoder.endEncoding()
         
-        commandBuffer.presentDrawable(drawable)
+        commandBuffer.present(drawable)
         commandBuffer.commit()
     }
     
-    func update() {
-
-//
-    }
+    func update() { }
 }
