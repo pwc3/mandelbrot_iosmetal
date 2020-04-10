@@ -11,20 +11,28 @@ import UIKit
 
 class Mandelbrot {
     let resolution: CGSize
+    let translationScale: CGSize
+
     var origin: CGPoint
     var zoom: CGFloat
-
-    var delta  = CGPoint(x: 3.5, y: 2.0)
+    var delta: CGPoint
 
     init() {
-        resolution = UIScreen.main.bounds.size
+        let screenSize = UIScreen.main.bounds.size
+        let scale = UIScreen.main.nativeScale
+        resolution = CGSize(width: screenSize.width * scale, height: screenSize.height * scale)
+        translationScale = CGSize(width: screenSize.width / 2, height: screenSize.height / 2)
+
         origin = CGPoint(x: -0.5, y: 0)
+
+        let h: CGFloat = 2.5
+        delta = CGPoint(x: h * resolution.width / resolution.height, y: h)
         zoom = 1
     }
 
     func moveOrigin(dx: CGFloat, dy: CGFloat) {
-        let deltaX = (-dx / resolution.width) / zoom
-        let deltaY = (dy / resolution.height) / zoom
+        let deltaX = (-dx / translationScale.width) / zoom
+        let deltaY = (dy / translationScale.height) / zoom
 
         origin.x += deltaX
         origin.y += deltaY

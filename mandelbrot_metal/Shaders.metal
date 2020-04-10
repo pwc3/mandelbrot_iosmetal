@@ -28,6 +28,7 @@ half4 lerpf(half4 a, half4 b, float t)
 
 half4 HeatMapColor(float value, float minValue, float maxValue)
 {
+/* ORIGINAL COLOR SCHEME
 #define HEATMAP_COLORS_COUNT 6
     half4 colors[HEATMAP_COLORS_COUNT] =
     {
@@ -38,6 +39,29 @@ half4 HeatMapColor(float value, float minValue, float maxValue)
         half4(1.00, 0.60, 0.00, 1.00),
         half4(1.00, 0.00, 0.00, 1.00),
     };
+ */
+
+/* COLOR SCHEME TWO */
+#define HEATMAP_COLORS_COUNT 5
+    half4 colors[HEATMAP_COLORS_COUNT] =
+    {
+        half4(0.00, 0.00, 0.25, 1.00),
+        half4(0.00, 0.00, 1.00, 1.00),
+        half4(1.00, 1.00, 0.00, 1.00),
+        half4(1.00, 0.60, 0.00, 1.00),
+        half4(0.00, 0.00, 0.00, 1.00),
+    };
+
+/* COLOR SCHEME THREE
+#define HEATMAP_COLORS_COUNT 3
+    half4 colors[HEATMAP_COLORS_COUNT] =
+    {
+        half4(0.0, 0.0, 0.2, 1.0),
+        half4(1.0, 1.0, 1.0, 1.0),
+        half4(0.0, 0.0, 0.0, 1.0)
+    };
+ */
+
     float ratio=(HEATMAP_COLORS_COUNT-1.0)*saturate((value-minValue)/(maxValue-minValue));
     int indexMin = floor(ratio);
     
